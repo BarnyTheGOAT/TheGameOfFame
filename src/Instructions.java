@@ -1,7 +1,11 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class Instructions extends JPanel implements ActionListener {
     Layout layout;
@@ -85,17 +89,33 @@ public class Instructions extends JPanel implements ActionListener {
         add(backButton);
     }
 
-    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
+            buttonSound();
             CardLayout cl = (CardLayout) layout.cards.getLayout();
             cl.show(layout.cards, "Start");
         }
+    }
+
+    private void buttonSound(){
+        playWav("resources/buttonClick.wav");
+    }
+
+    private void playWav(String filename) {
+        new Thread(() -> {
+            try {
+                File file = new File(filename);
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.start();
+            } catch (Exception _) {
+            }
+        }).start();
     }
 }
